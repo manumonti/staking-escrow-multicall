@@ -38,8 +38,8 @@ def main():
             )
 
         multicall = Multicall(calls)
-        callResult = multicall()
-        staker_list = {**staker_list, **callResult}
+        call_result = multicall()
+        staker_list = {**staker_list, **call_result}
 
 
     staker_with_st_prov_list = {}
@@ -63,10 +63,10 @@ def main():
         )
 
     multicall = Multicall(calls)
-    callResult = multicall()
+    call_result = multicall()
 
     for stake in staker_with_st_prov_list:
-        staker_with_st_prov_list[stake]["tBTC"] = callResult[stake]
+        staker_with_st_prov_list[stake]["tBTC"] = call_result[stake]
 
     staker_list.update(staker_with_st_prov_list)
 
