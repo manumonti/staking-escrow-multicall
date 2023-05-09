@@ -2,7 +2,9 @@
 
 This Python script uses [nucypher/multicall.py](https://github.com/nucypher/multicall.py) package to
 request stakers information from the [NuCypher Staking
-Escrow](https://etherscan.io/address/0xbbd3c0c794f40c4f993b03f65343acc6fcfcb2e2) smartcontract.
+Escrow](https://etherscan.io/address/0xbbd3c0c794f40c4f993b03f65343acc6fcfcb2e2) smartcontract and
+[Keep Wallet Registry](https://etherscan.io/address/0xfbae130e06bbc8ca198861beecae6e2b830398fb#code)
+contract.
 
 ## Installation
 
