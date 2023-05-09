@@ -2,6 +2,7 @@ import json
 from multicall import Call, Multicall
 
 STAKING_ESCROW = "0xbbD3C0C794F40c4f993B03F65343aCC6fcfCb2e2"
+WALLET_REGISTRY = "0x46d52E41C2F300BC82217Ce22b920c34995204eb"
 
 
 def toStakingProvider(info):
@@ -9,7 +10,7 @@ def toStakingProvider(info):
 
 
 def main():
-    result = {}
+    staker_list = {}
 
     with open("mainnet-stakers.txt") as file:
         mainnet_stakers = [line.rstrip('\n') for line in file]
@@ -38,10 +39,42 @@ def main():
 
         multicall = Multicall(calls)
         callResult = multicall()
-        result = {**result, **callResult}
+        staker_list = {**staker_list, **callResult}
 
-    json_file = json.dumps(result, indent=2)
-    print(json_file)
+
+    staker_with_st_prov_list = {}
+
+    for stake in staker_list:
+        staking_provider = staker_list[stake]["stakingProvider"]
+        if staking_provider == "0x0000000000000000000000000000000000000000":
+            staker_list[stake]["tBTC"] = 0
+        else:
+            staker_with_st_prov_list[stake] = staker_list[stake]
+
+    calls = []
+    for stake in staker_with_st_prov_list:
+        staking_provider = staker_with_st_prov_list[stake]["stakingProvider"]
+        calls.append(
+            Call(
+                WALLET_REGISTRY,
+                ["eligibleStake(address)(uint96)", staking_provider],
+                [(stake, None)],
+            )
+        )
+
+    multicall = Multicall(calls)
+    callResult = multicall()
+
+    for stake in staker_with_st_prov_list:
+        staker_with_st_prov_list[stake]["tBTC"] = callResult[stake]
+
+    staker_list.update(staker_with_st_prov_list)
+
+    staker_list_json = json.dumps(staker_list, indent=2)
+
+    with open("staker_list.json", "w") as file:
+        file.write(staker_list_json)
+        file.close()
 
 if __name__ == "__main__":
     main()
